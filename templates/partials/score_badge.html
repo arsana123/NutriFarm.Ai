@@ -1,0 +1,5 @@
+{# Usage: include with result=<TestResult>. Colour follows the category, not the score. #}
+{% if result.quality_status == 'Within prototype criteria' %}<span class="badge text-bg-success">{{ result.quality_status }}</span>
+{% elif result.quality_status == 'Borderline' %}<span class="badge text-bg-warning">{{ result.quality_status }}</span>
+{% elif result.quality_status == 'Needs review' %}<span class="badge text-bg-danger">{{ result.quality_status }}</span>
+{% else %}<span class="badge text-bg-secondary">{{ result.quality_status }}</span>{% endif %}

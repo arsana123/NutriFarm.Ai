@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account | NutriFarm AI{% endblock %}
+
+{% block content %}
+<section class="section-pad">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-xl-6">
+        <p class="eyebrow">JOIN NUTRIFARM AI</p>
+        <h1 class="content-page-heading">Create your farmer account.</h1>
+        <p class="content-page-lead">Your account keeps your sample information private and connected to you.</p>
+        <form method="post" class="feature-card" novalidate>
+          {% csrf_token %}
+          {% include 'partials/form_errors.html' %}
+          {% for field in form %}{% include 'partials/form_field.html' %}{% endfor %}
+          <button type="submit" class="btn btn-brand w-100">Create account</button>
+          <p class="text-center text-secondary mt-3 mb-0">Already registered? <a href="{% url 'testing:login' %}">Log
+              in</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

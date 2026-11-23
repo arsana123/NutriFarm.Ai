@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete {{ sample.sample_name }} | NutriFarm AI{% endblock %}
+
+{% block content %}
+<section class="section-pad">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-xl-6">
+        <p class="eyebrow">DELETE SAMPLE</p>
+        <h1 class="content-page-heading">Delete “{{ sample.sample_name }}”?</h1>
+        <p class="content-page-lead">This permanently removes the sample{% if sample.result %} and its assessment{% endif %}.
+          This cannot be undone.</p>
+        <form method="post" class="d-flex flex-column flex-sm-row gap-3">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Yes, delete this sample</button>
+          <a class="btn btn-outline-brand" href="{% url 'testing:sample_detail' sample.pk %}">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # import sorting
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "DJ",       # django-specific
+    "C4",       # comprehensions
+    "SIM",      # simplifications
+]
+ignore = ["DJ001"]  # allow nullable text fields if ever needed
+
+[tool.ruff.lint.per-file-ignores]
+"*/tests/*" = ["E501"]
+"nutrifarm/settings.py" = ["E501"]
+
+[tool.ruff.format]
+quote-style = "single"

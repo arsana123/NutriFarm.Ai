@@ -1,0 +1,23 @@
+{# Renders one Bootstrap form field with label, help text and errors. #}
+{% if field.is_hidden %}
+{{ field }}
+{% elif field.name == 'website' %}
+<div class="hp-field" aria-hidden="true">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {{ field }}
+</div>
+{% else %}
+<div class="{{ wrapper_class|default:'mb-3' }}">
+  {% if field.widget_type == 'checkbox' %}
+  <div class="form-check mt-2">
+    {{ field }}
+    <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+  </div>
+  {% else %}
+  <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {{ field }}
+  {% endif %}
+  {% if field.help_text %}<div class="form-text" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>{% endif %}
+  {% for error in field.errors %}<div class="invalid-feedback d-block" role="alert">{{ error }}</div>{% endfor %}
+</div>
+{% endif %}

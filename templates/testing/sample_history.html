@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}My Samples | NutriFarm AI{% endblock %}
+
+{% block content %}
+<section class="section-pad">
+  <div class="container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+      <div>
+        <p class="eyebrow mb-2">YOUR SAMPLE RECORDS</p>
+        <h1 class="content-page-heading mb-2">My samples</h1>
+        <p class="text-secondary mb-0">Collection details and testing history for your account.</p>
+      </div>
+      <div class="d-flex flex-column flex-sm-row gap-2">
+        <a class="btn btn-outline-brand" href="{% url 'testing:sample_export_csv' %}">Download CSV</a>
+        <a class="btn btn-brand" href="{% url 'testing:sample_create' %}">Submit a sample <span
+            aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+
+    <form method="get" class="row g-2 align-items-end mb-4" aria-label="Filter samples">
+      <div class="col-sm-5 col-md-4">
+        <label class="form-label small mb-1" for="filter-feed-type">Feed type</label>
+        <select id="filter-feed-type" name="feed_type" class="form-select">
+          <option value="">All feed types</option>
+          {% for value, label in feed_type_choices %}
+          <option value="{{ value }}" {% if value == selected_feed_type %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-5 col-md-4">
+        <label class="form-label small mb-1" for="filter-status">Assessment</label>
+        <select id="filter-status" name="status" class="form-select">
+          <option value="">All results</option>
+          {% for value, label in status_choices %}
+          <option value="{{ value }}" {% if value == selected_status %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-2 col-md-auto d-flex gap-2">
+        <button type="submit" class="btn btn-brand">Filter</button>
+        {% if is_filtered %}<a class="btn btn-outline-brand" href="{% url 'testing:sample_history' %}">Clear</a>{% endif %}
+      </div>
+    </form>
+
+    {% if samples %}
+    <div class="table-responsive">
+      <table class="table align-middle bg-white sample-table">
+        <thead>
+          <tr>
+            <th scope="col">Sample</th>
+            <th scope="col">Feed type</th>
+            <th scope="col">Collected</th>
+            <th scope="col">pH</th>
+            <th scope="col">Moisture</th>
+            <th scope="col">Result</th>
+            <th scope="col"><span class="visually-hidden">Details</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in samples %}
+          <tr>
+            <td class="fw-semibold">{{ sample.sample_name }}</td>
+            <td>{{ sample.get_feed_type_display }}</td>
+            <td>{{ sample.collection_date|date:"M j, Y" }}</td>
+            <td>{{ sample.ph_value }}</td>
+            <td>{{ sample.moisture }}%</td>
+            <td>
+              {% with result=sample.result %}
+              {% if result %}{% include 'partials/score_badge.html' %}
+              {% if result.quality_score is not None %}<span class="small text-secondary ms-1">{{ result.quality_score }}</span>{% endif %}
+              {% else %}<span class="text-secondary">Not assessed</span>{% endif %}
+              {% endwith %}
+            </td>
+            <td><a class="text-link" href="{% url 'testing:sample_detail' sample.pk %}">View details</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if samples.paginator.num_pages > 1 %}
+    <nav aria-label="Sample pages" class="d-flex justify-content-between align-items-center">
+      <span class="small text-secondary">Page {{ samples.number }} of {{ samples.paginator.num_pages }}
+        · {{ samples.paginator.count }} samples</span>
+      <div class="d-flex gap-2">
+        {% if samples.has_previous %}
+        <a class="btn btn-outline-brand btn-sm" href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ samples.previous_page_number }}">&larr; Previous</a>
+        {% endif %}
+        {% if samples.has_next %}
+        <a class="btn btn-outline-brand btn-sm" href="?{% if filter_query %}{{ filter_query }}&amp;{% endif %}page={{ samples.next_page_number }}">Next &rarr;</a>
+        {% endif %}
+      </div>
+    </nav>
+    {% endif %}
+    {% elif is_filtered %}
+    <div class="feature-card text-center py-5">
+      <h2 class="h4">No samples match these filters</h2>
+      <a class="btn btn-outline-brand mt-2" href="{% url 'testing:sample_history' %}">Clear filters</a>
+    </div>
+    {% else %}
+    <div class="feature-card text-center py-5">
+      <span class="feature-icon icon-green mx-auto" aria-hidden="true">&#127793;</span>
+      <h2 class="h4">No samples yet</h2>
+      <p class="text-secondary">Your submitted samples will appear here.</p>
+      <a class="btn btn-brand mt-2" href="{% url 'testing:sample_create' %}">Submit your first sample</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

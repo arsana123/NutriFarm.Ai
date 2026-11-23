@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ sample.sample_name }} | NutriFarm AI{% endblock %}
+
+{% block content %}
+{% with result=sample.result %}
+<section class="section-pad">
+  <div class="container">
+    <p class="eyebrow">SAMPLE DETAILS</p>
+    <h1 class="content-page-heading">{{ sample.sample_name }}</h1>
+    <p class="content-page-lead">{{ sample.get_feed_type_display }} · Collected {{ sample.collection_date|date:"M j, Y" }}
+      · Submitted {{ sample.created_at|date:"M j, Y" }}.</p>
+    <div class="d-flex flex-wrap gap-2 mb-2">
+      <a class="btn btn-outline-brand btn-sm" href="{% url 'testing:sample_update' sample.pk %}">Edit sample</a>
+      <a class="btn btn-outline-danger btn-sm" href="{% url 'testing:sample_delete' sample.pk %}">Delete</a>
+    </div>
+    <div class="row g-3 mt-2">
+      <div class="col-sm-6 col-lg-4">
+        <div class="feature-card h-100">
+          <p class="eyebrow mb-2">pH VALUE</p>
+          <p class="h3 mb-0">{{ sample.ph_value }}</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <div class="feature-card h-100">
+          <p class="eyebrow mb-2">MOISTURE</p>
+          <p class="h3 mb-0">{{ sample.moisture }}%</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <div class="feature-card h-100">
+          <p class="eyebrow mb-2">TEMPERATURE</p>
+          <p class="h3 mb-0">{{ sample.temperature }}&deg;C</p>
+        </div>
+      </div>
+    </div>
+    <p class="text-secondary mt-4">
+      Smell: {{ sample.get_smell_display }} · Mold present:
+      {% if sample.mold_present %}Yes{% else %}No{% endif %}
+    </p>
+    <div class="feature-card mt-4">
+      <h2 class="h5">Additional observations</h2>
+      {% if sample.observations %}
+      <p class="mb-0">{{ sample.observations|linebreaksbr }}</p>
+      {% else %}
+      <p class="text-secondary mb-0">No additional observations were provided.</p>
+      {% endif %}
+    </div>
+    {% if result %}
+    <div class="feature-card mt-4">
+      <p class="eyebrow mb-2">QUALITY RESULT</p>
+      <h2 class="h4 d-flex align-items-center gap-2 flex-wrap">
+        {{ result.quality_status }}
+        {% if result.quality_score is not None %}<span class="score-pill">{{ result.quality_score }}/100</span>{% endif %}
+      </h2>
+      <p>{{ result.assessment_explanation }}</p>
+      <h3 class="h6">Recommendations</h3>
+      <p class="mb-0">{{ result.recommendations|linebreaksbr }}</p>
+      <a class="text-link d-inline-block mt-3" href="{% url 'testing:sample_result' sample.pk %}">View full
+        assessment</a>
+    </div>
+    {% else %}
+    <div class="alert alert-light border mt-4" role="status">This sample has not been assessed yet. The assessment uses
+      illustrative prototype checks and is not a feed-safety certification.</div>
+    {% endif %}
+    <form method="post" action="{% url 'testing:evaluate_sample' sample.pk %}" class="mt-3">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-brand">{% if result %}Re-evaluate sample{% else %}Evaluate sample{% endif %}</button>
+    </form>
+    <a class="text-link d-inline-block mt-4" href="{% url 'testing:dashboard' %}">&larr; Back to dashboard</a>
+  </div>
+</section>
+{% endwith %}
+{% endblock %}
